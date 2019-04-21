@@ -44,13 +44,13 @@ function maze(x, y) {
 
 
 class CircleMaze {
-    constructor(x, y) {
+    constructor(x, y, maze, hallwayThickness, outerCircleRadius) {
         //inputs
         this.x = x;
         this.y = y;
         this.innerCircleRadius = 100;
-        this.outerCircleRadius = 300;
-        this.hallwayThickness = 100;
+        this.outerCircleRadius = outerCircleRadius;//300;
+        this.hallwayThickness = hallwayThickness;//100;
         this.spokeNum = 8;
         this.lineThickness = 10
 
@@ -58,49 +58,127 @@ class CircleMaze {
         this.numHallways = (this.outerCircleRadius - this.innerCircleRadius) / this.hallwayThickness;
 
         this.grid = this.generateGrid();
-        this.drawMaze();
+        this.drawMaze(maze);
     }
-    generateGrid(){
+    generateGrid() {
         var grid = [];
-        for(var i = 0; i < this.numHallways; i++) {
+        for (var i = 0; i < this.numHallways; i++) {
             var hallway = [];
-            for(var k = 0; k < this.spokeNum; k++) {
-                hallway.push( new Cell(k,k,i));
+            for (var k = 0; k < this.spokeNum; k++) {
+                hallway.push(new Cell(k, k, i));
             }
             grid.push(hallway);
         }
         return grid;
     }
-    drawMaze(){
-        for(var i = 0; i < this.spokeNum; i++) {
-            var radians = 2 * Math.PI * ((i+1)/this.spokeNum);
+    drawMaze(maze) {
+        for (var i = 0; i < this.numHallways + 1; i++) {
+            
+            var vertical = undefined;
+            if (i === 0) {
+                vertical = [];
+                vertical[0] = true;
+            } else if ( i === this.numHallways ) {
+                vertical = [];
+                vertical[this.spokeNum-1] = true;
+            } else  {
+                vertical = maze.verti[ i -1 ]
+            }
+            //console.log(i, vertical);
+            this.drawCircle(this.innerCircleRadius + i * this.hallwayThickness, vertical)
+        }
+        for (var i = 0; i < this.spokeNum; i++) {
+            var radians = 2 * Math.PI * ((i + 1) / this.spokeNum);
             //console.log(radians)
             var edgePoint = this.calculateCircleEdge(this.outerCircleRadius, radians);
-            //console.log(edgePoint)
-            this.drawLine([0,0], edgePoint)
+            var innerPoint = this.calculateCircleEdge(this.innerCircleRadius, radians);
+            var horiz = [];
+            for(var k =0; k< this.numHallways; k++){
+                horiz.push( maze.horiz[k][i])
+                
+            }
+            if( i === this.spokeNum -1){
+                //horiz[i] = undefined;
+                console.log(horiz)
+                this.drawLine(innerPoint, edgePoint)
+
+            } else {
+                this.drawLine(innerPoint, edgePoint, horiz)
+            }
+            
+            
         }
     }
-    calculateCircleEdge(radius, radians){
+    calculateCircleEdge(radius, radians) {
         var x = radius * Math.sin(radians);
         var y = radius * Math.cos(radians);
-        return [x,y];
+        return [x, -y];
     }
-    drawLine(point1, point2){
-        draw.line(point1[0]+this.x, point1[1]+this.y,
-            point2[0]+this.x, point2[1]+this.y)
-        .attr({
-            stroke: '#444',
-            'stroke-width': 10
-        })
-        .addClass('circle-line')
+    drawLine(point1, point2, horiz) {
+        var line = draw.line(point1[0] + this.x, point1[1] + this.y,
+            point2[0] + this.x, point2[1] + this.y)
+            .attr({
+                stroke: '#444',
+                'stroke-width': 10
+            })
+            .addClass('circle-line')
+        if( horiz !== undefined){
+            this.calcLineStrokeDash(line, horiz);
+        }
+        
     }
-    calcLineStrokeDash(){
+    calcLineStrokeDash(line, horiz) {
         //return '' + hallwayThickness + ' ' + hallwayThickness + ' ' + hallwayThickness * 6;
+        var stroke = '';
+        var countConcat = concatSimilarWithCount(horiz);
+        console.log(countConcat)
+        for(var i =0; i < countConcat.length; i++){
+            if( i === 0 && countConcat[i].type === true){
+                line.attr('stroke-dashoffset', countConcat[i].number * this.hallwayThickness * -1)
+            } else {
+                stroke += countConcat[i].number * this.hallwayThickness + ' ';
+            }
+            
+        }
+        console.log( stroke )
+        stroke += ' ' + this.hallwayThickness * this.numHallways;
+        line.attr('stroke-dasharray', stroke)
     }
-    drawCircle(){
+    drawCircle(radius, vertical) {
+        var circle = draw.path("M" + this.x + " " + (this.y - radius) +
+            " a " + radius + " " + radius + " 0 0 1 0 " + radius * 2 +
+            " a " + radius + " " + radius + " 0 0 1 0 " + radius * -2)
+            .attr({
+                fill: 'none',
+                stroke: '#444',
+                'stroke-width': 10
+            })
+            .addClass('circle-line')
+        if (vertical !== undefined) {
+            var circum =(2 * Math.PI * radius) ;
+            var gap = circum / this.spokeNum;
+            this.calcCircleStrokeDash(circle, vertical, gap);
+        }
+    }
+    calcCircleStrokeDash(circle, vertical, gap) {
+        console.log(vertical)
+        
+        var stroke = '';
+        var countConcat = concatSimilarWithCount(vertical);
+        console.log(countConcat)
+        for(var i =0; i < countConcat.length; i++){
+            if( i === 0 && countConcat[i].type === true){
+                circle.attr('stroke-dashoffset', countConcat[i].number * gap * -1)
+            } else {
+                stroke += countConcat[i].number * gap + ' ';
+            }
+            
+        }
+        console.log( stroke )
+        stroke += ' ' + gap * this.spokeNum;
+        circle.attr('stroke-dasharray', stroke)
+    }
 
-    }
-    calcCircleStrokeDash(){}
 }
 class Cell {
     constructor(x1, x2, y) {
@@ -110,7 +188,25 @@ class Cell {
     }
 }
 
-console.log( new CircleMaze(500, 500) )
+function concatSimilarWithCount(array){
+    //takes [true, _, _ ,_, true, true]
+    //returns [{true,1}, {_,3}, {true,2}]
+    var result = [];
+    var obj = { type: array[0], number: 1}
+    if(array.length === 1){
+        return [obj];
+    }
+    for(var i=1; i < array.length; i++){
+        if( array[i] === obj.type ){
+            obj.number++;
+        } else {
+            result.push(obj);
+            obj = { type: array[i], number: 1}
+        }
+    }
+    result.push(obj);
+    return result;
+}
 
 function display(m) {
     var text = [];
@@ -138,7 +234,11 @@ function display(m) {
         if (m.x * 2 - 1 == j) line[4 * m.y] = ' ';
         text.push(line.join('') + '\r\n');
     }
+
     return text.join('');
 }
 
-console.log(display(maze(4, 5)))
+var genMaze = maze(2, 8);
+console.log(display(genMaze))
+
+console.log(new CircleMaze(500, 500, genMaze, 100, 300))
