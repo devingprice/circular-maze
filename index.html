@@ -6,25 +6,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Circular Maze Demo</title>
-
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <style>
         .circle-line:hover {
             stroke: red;
         }
+
         .maze-container {
+            display: none;
+            position: absolute;
+            top: calc(-250px + 32px);
+            right: calc(-250px + 32px);
+
             width: 500px;
             height: 500px;
-            display: block;
-            transform: rotate(90deg) ;
+            /* transform: rotate(90deg); */
         }
+
         .maze-flipped {
-            transform: rotate(270deg) translateY(100%);
+            /* transform: rotate(270deg) translateY(100%); */
+            left: calc(-250px + 32px);
+        }
+
+        .show {
+            display: block;
+        }
+        .spinning {
+            animation: clockwise 20s linear infinite;
+        }
+
+        @keyframes clockwise {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes counter-clockwise {
+            from {
+                transform: rotate(360deg);
+            }
+
+            to {
+                transform: rotate(0deg);
+            }
+        }
+
+        .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .close-left {
+            left: 0;
+        }
+
+        .box {
+            position: relative;
+            width: 500px;
+            height: 200px;
+            margin: 500px auto;
+            background-color: skyblue;
         }
     </style>
 </head>
 
 <body>
-    <div id="maze" class="maze-container">
+    <div class="box">
+        <div id="x-close" class="close">
+            <i class="far fa-times-circle fa-4x"></i>
+        </div>
+        <div id="maze" class="maze-container maze-flipped spinning"></div>
+    </div>
+
 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.7.1/svg.min.js"></script>
@@ -60,7 +118,11 @@
         //     })
         //     .addClass('circle-line')
 
-
+        document.getElementById('x-close').addEventListener('mouseover', function (e) {
+            document.getElementById('x-close').classList.add('close-left');
+            document.getElementById('maze').classList.add('show');
+            //z index on svg is higher so this only gets called first time
+        })
 
         var svgMaze = document.getElementById('mazeSVG');
         svgMaze.addEventListener('load', function () {
@@ -73,6 +135,7 @@
                     if (e.target && e.target.classList.contains('circle-line')) {
                         console.log('hovered')
                         console.log('failed')
+                        document.getElementById('x-close').classList.toggle('close-left');
                         document.getElementById('maze').classList.toggle('maze-flipped')
                     }
 
@@ -82,7 +145,7 @@
             svgMaze.querySelector('.circle-target').addEventListener('mouseover', function (e) {
                 if (e.target && e.target.classList.contains('circle-target')) {
                     console.log('reached the end')
-                    alert('made it')
+                    console.log('made it')
                 }
 
             })
