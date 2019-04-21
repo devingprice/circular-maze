@@ -108,6 +108,14 @@ class CircleMaze {
             
             
         }
+
+        draw.path("M" + this.x + " " + (this.y - this.innerCircleRadius) +
+            " a " + this.innerCircleRadius + " " + this.innerCircleRadius + " 0 0 1 0 " + this.innerCircleRadius * 2 +
+            " a " + this.innerCircleRadius + " " + this.innerCircleRadius + " 0 0 1 0 " + this.innerCircleRadius * -2)
+            .attr({
+                fill: 'transparent'
+            })
+            .addClass('circle-target')
     }
     calculateCircleEdge(radius, radians) {
         var x = radius * Math.sin(radians);
@@ -238,7 +246,7 @@ function display(m) {
     return text.join('');
 }
 
-var genMaze = maze(2, 8);
+var genMaze = maze(3, 8);
 console.log(display(genMaze))
 
-console.log(new CircleMaze(500, 500, genMaze, 100, 300))
+console.log(new CircleMaze(500, 500, genMaze, 100, 400))

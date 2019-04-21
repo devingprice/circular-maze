@@ -19,7 +19,7 @@
 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.7.1/svg.min.js"></script>
-    
+
     <script>
 
 
@@ -54,13 +54,25 @@
         svgMaze.addEventListener('load', function () {
             console.log(svgMaze)
 
-            svgMaze.querySelector('.circle-line').addEventListener('mouseover', function (e) {
-                if (e.target && e.target.classList.contains('circle-line')) {
-                    console.log('hovered')
+            var svgLines = svgMaze.querySelectorAll('.circle-line')
+
+            svgLines.forEach(function (svgLine) {
+                svgLine.addEventListener('mouseover', function (e) {
+                    if (e.target && e.target.classList.contains('circle-line')) {
+                        console.log('hovered')
+                        alert('failed')
+                    }
+
+                })
+            })
+
+            svgMaze.querySelector('.circle-target').addEventListener('mouseover', function (e) {
+                if (e.target && e.target.classList.contains('circle-target')) {
+                    console.log('reached the end')
+                    alert('made it')
                 }
 
             })
-
         })
     </script>
     <script src="app.js"></script>
