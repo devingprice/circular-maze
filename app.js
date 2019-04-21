@@ -246,7 +246,9 @@ function display(m) {
     return text.join('');
 }
 
-var genMaze = maze(3, 8);
+var genMaze = maze(6, 8);
+//var genMaze = maze(3, 8);
 console.log(display(genMaze))
 
-console.log(new CircleMaze(500, 500, genMaze, 100, 400))
+console.log(new CircleMaze(500, 500, genMaze, 50, 400))
+// console.log(new CircleMaze(500, 500, genMaze, 100, 400))
