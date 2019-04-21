@@ -90,10 +90,13 @@
     <script>
 
 
-        var draw = SVG('maze')
-            .attr('id', 'mazeSVG')
-            .size(500, 500)
-            .viewbox(0, 0, 1000, 1000);
+        // var draw = SVG('maze')
+        //     .attr('id', 'mazeSVG')
+        //     .size(500, 500)
+        //     .viewbox(0, 0, 1000, 1000);
+
+
+
         //var rect = draw.rect(100, 100).attr({ fill: '#f06' })
 
         // var radius = 300;
@@ -118,38 +121,38 @@
         //     })
         //     .addClass('circle-line')
 
-        document.getElementById('x-close').addEventListener('mouseover', function (e) {
-            document.getElementById('x-close').classList.add('close-left');
-            document.getElementById('maze').classList.add('show');
-            //z index on svg is higher so this only gets called first time
-        })
+        // document.getElementById('x-close').addEventListener('mouseover', function (e) {
+        //     document.getElementById('x-close').classList.add('close-left');
+        //     document.getElementById('maze').classList.add('show');
+        //     //z index on svg is higher so this only gets called first time
+        // })
 
-        var svgMaze = document.getElementById('mazeSVG');
-        svgMaze.addEventListener('load', function () {
-            console.log(svgMaze)
+        // var svgMaze = document.getElementById('mazeSVG');
+        // svgMaze.addEventListener('load', function () {
+        //     console.log(svgMaze)
 
-            var svgLines = svgMaze.querySelectorAll('.circle-line')
+        //     var svgLines = svgMaze.querySelectorAll('.circle-line')
 
-            svgLines.forEach(function (svgLine) {
-                svgLine.addEventListener('mouseover', function (e) {
-                    if (e.target && e.target.classList.contains('circle-line')) {
-                        console.log('hovered')
-                        console.log('failed')
-                        document.getElementById('x-close').classList.toggle('close-left');
-                        document.getElementById('maze').classList.toggle('maze-flipped')
-                    }
+        //     svgLines.forEach(function (svgLine) {
+        //         svgLine.addEventListener('mouseover', function (e) {
+        //             if (e.target && e.target.classList.contains('circle-line')) {
+        //                 console.log('hovered')
+        //                 console.log('failed')
+        //                 document.getElementById('x-close').classList.toggle('close-left');
+        //                 document.getElementById('maze').classList.toggle('maze-flipped')
+        //             }
 
-                })
-            })
+        //         })
+        //     })
 
-            svgMaze.querySelector('.circle-target').addEventListener('mouseover', function (e) {
-                if (e.target && e.target.classList.contains('circle-target')) {
-                    console.log('reached the end')
-                    console.log('made it')
-                }
+        //     svgMaze.querySelector('.circle-target').addEventListener('mouseover', function (e) {
+        //         if (e.target && e.target.classList.contains('circle-target')) {
+        //             console.log('reached the end')
+        //             console.log('made it')
+        //         }
 
-            })
-        })
+        //     })
+        // })
     </script>
     <script src="app.js"></script>
 </body>
