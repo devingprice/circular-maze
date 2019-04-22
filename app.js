@@ -345,6 +345,7 @@ class NewCircleMaze {
 
         this.numHallways = (this.outerCircleRadius - this.innerCircleRadius) / this.hallwayThickness;
 
+        this.doorway = args.doorway || undefined;
 
 
         //inputs
@@ -479,26 +480,75 @@ class NewCircleMaze {
         }
     }
     calcCircleStrokeDash(circle, vertical, gap) {
-        var emptySpace = gap;
-        if (emptySpace > 200){ 
-            console.log( ' too big ');
-            emptySpace = 200;
-            
+        var emptySpace = this.doorway;
+        if (emptySpace !== undefined && gap > emptySpace){ //if doorway value given and circle's gap isn't already small enough
             var stroke = '';
             var countConcat = concatSimilarWithCount(vertical);
+            
             for(var i =0; i < countConcat.length; i++){
-                if( i === 0 && countConcat[i].type === true){
-                    //circle.attr('stroke-dashoffset', countConcat[i].number * gap * -1)
+                
+                var add = 0;
+                if( countConcat[i].type === true){
+                    if( i === 0){ stroke += ((gap - emptySpace)/2) + ' '; } // add a black start if first is true
+
+                    if( countConcat[i].number > 1){ //if multiple true then needs to have spacing
+                        var array = new Array(countConcat[i].number).fill( emptySpace )
+                        stroke += array.join(' '+ (gap-emptySpace) +' ');
+                        stroke += ' '; //join doesnt add spacing
+                    } else {
+                        stroke += emptySpace + ' ';
+                    }
+                    
                 } else {
-                    stroke += countConcat[i].number * gap + ' ';
+                    if( i > 0) { add += (gap-emptySpace) / 2 } //add part from last empty
+                    if(i < (countConcat.length -1) ){ add += (gap - emptySpace)/ 2 } //add first part of next empty
+                    add += (countConcat[i].number * gap);
+                    
+                    stroke += add +  ' ';
                 }
+                    
+                // OLD Func, removed repeating code 
+                // if( i === 0 && countConcat[i].type === true){ //first being true needs small line at beginning
+                //     stroke += ((gap - emptySpace)/2) + ' '; //start line
+                    
+                //     if( countConcat[i].number > 1){ //if multiple true then needs to have spacing
+                //         var array = new Array(countConcat[i].number).fill( emptySpace )
+                //         stroke += array.join(' '+ (gap-emptySpace) +' ');
+                //         stroke += ' '; //join doesnt add spacing
+                //     } else {
+                //         stroke += emptySpace + ' ';
+                //     }
+
+                // } else {
+                //     var add = 0;
+                //     if( countConcat[i].type === true){
+                //         if( countConcat[i].number > 1){ //if multiple true then needs to have spacing
+                //             var array = new Array(countConcat[i].number).fill( emptySpace )
+                //             stroke += array.join(' '+ (gap-emptySpace) +' ');
+                //             stroke += ' '; //join doesnt add spacing
+                //         } else {
+                //             stroke += emptySpace + ' ';
+                //         }
+                        
+                //         //if(i === (countConcat.length -1) ){ stroke += (gap - emptySpace)/ 2 } dont add this becaue then blank space afterwards is blank
+                //     } else {
+                //         if( i > 0) { add += (gap-emptySpace) / 2 } //add part from last empty
+                //         if(i < (countConcat.length -1) ){ add += (gap - emptySpace)/ 2 } //add first part of next empty
+                //         add += (countConcat[i].number * gap);
+                        
+                //         stroke += add +  ' ';
+                //     }
+                    
+                // }
                 
             }
+            
             stroke += ' ' + gap * this.spokeNum;
             circle.attr('stroke-dasharray', stroke)
             return;
         };
 
+        
         var stroke = '';
         var countConcat = concatSimilarWithCount(vertical);
         for(var i =0; i < countConcat.length; i++){
@@ -604,6 +654,6 @@ class NewCircleMaze {
     
 }
 
-new NewCircleMaze({width: 500, height: 500, lineThickness: 20, lineColor: 'black'})
+new NewCircleMaze({width: 500, height: 500, lineThickness: 20, lineColor: 'black', doorway: 50})
 
 closeBoxListeners();
