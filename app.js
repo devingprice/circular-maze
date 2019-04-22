@@ -367,11 +367,16 @@ class NewCircleMaze {
         this.maze = this.createMaze(3,8);
         this.logMaze();
 
-        draw = this.createSVG('maze', args.width, args.height);
+        draw = this.createSVG('maze', args.diameter, args.diameter);
+        if( args.spinning !== undefined ){
+            document.getElementById('mazeSVG').classList.add('spinning')
+        }
         //svg lines
         this.drawMaze(this.maze);
         
         //this.grid = this.generateGrid();
+
+        this.closeBoxListeners();
     }
     // generateGrid() {
     //     var grid = [];
@@ -652,8 +657,43 @@ class NewCircleMaze {
         console.log( text.join('') );
     }
     
+    closeBoxListeners(closeId, mazeId, svgId){
+        document.getElementById('x-close').addEventListener('mouseover', function (e) {
+            document.getElementById('x-close').classList.add('close-left');
+            document.getElementById('maze').classList.add('show');
+            //z index on svg is higher so this only gets called first time
+        })
+    
+        var svgMaze = document.getElementById('mazeSVG');
+        svgMaze.addEventListener('load', function () {
+            console.log(svgMaze)
+    
+            var svgLines = svgMaze.querySelectorAll('.circle-line')
+    
+            svgLines.forEach(function (svgLine) {
+                svgLine.addEventListener('mouseover', function (e) {
+                    if (e.target && e.target.classList.contains('circle-line')) {
+                        console.log('hovered')
+                        console.log('failed')
+                        document.getElementById('x-close').classList.toggle('close-left');
+                        document.getElementById('maze').classList.toggle('maze-flipped')
+                    }
+    
+                })
+            })
+    
+            //TODO: currently not working if multiple mazes, need to add to all and let hovering target it's parent maze
+            svgMaze.querySelector('.circle-target').addEventListener('mouseover', function (e) {
+                if (e.target && e.target.classList.contains('circle-target')) {
+                    console.log('reached the end')
+                    console.log('made it')
+                }
+    
+            })
+        })
+    }
 }
 
-new NewCircleMaze({width: 500, height: 500, lineThickness: 20, lineColor: 'black', doorway: 50})
-
-closeBoxListeners();
+//new NewCircleMaze({width: 500, height: 500, lineThickness: 20, lineColor: 'black', doorway: 50, spinning: true})
+new NewCircleMaze({diameter: 500, lineThickness: 20, lineColor: 'black', doorway: 50, spinning: true})
+//main.closeBoxListeners();
